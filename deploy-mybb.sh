@@ -2,7 +2,7 @@
 
 # Configuration variables
 CONFIG="./config"
-MYBB_PACKAGE="./mybb_1809.zip"
+MYBB_PACKAGE="./mybb_1809_with_theme.zip"
 DEPLOYMENT_DIR="/var/www/html"
 
 # Clean-up and copy files.
