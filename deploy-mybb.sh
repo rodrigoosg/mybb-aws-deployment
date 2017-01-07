@@ -7,7 +7,7 @@ DEPLOYMENT_DIR="/var/www/html"
 
 # Clean-up and copy files.
 rm -rf "$DEPLOYMENT_DIR"/*
-unzip "$MYBB_PACKAGE" .
+unzip "$MYBB_PACKAGE"
 cp -r ./Uploads/* "$DEPLOYMENT_DIR"/
 
 # Prepare and copy dynamic configuration files.
