@@ -22,6 +22,16 @@ sed -e "s/MYBB_DBNAME/${MYBB_DBNAME}/g" \
     -e "s/MYBB_DBPORT/${MYBB_DBPORT}/g" \
     "${CONFIG}/config.php" > "${DEPLOYMENT_DIR}/inc/config.php"
 
+# Initialize database.
+sed -e "s/MYBB_ADMINEMAIL/${MYBB_ADMINEMAIL}/g" \
+    -e "s/MYBB_DOMAINNAME/${MYBB_DOMAINNAME}/g" \
+    "${CONFIG}/mybb.sql" | mysql \
+    --user="$MYBB_DBUSERNAME" \
+    --password="$MYBB_DBPASSWORD" \
+    --host="$MYBB_DBHOSTNAME" \
+    --port="$MYBB_DBPORT" \
+    --database="$MYBB_DBNAME" || echo "Schema Already Exists!"
+
 # Set proper ownership and permissions.
 cd "$DEPLOYMENT_DIR"
 chmod 666 inc/config.php inc/settings.php

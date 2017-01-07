@@ -104,7 +104,7 @@
     "MultiAZ" : {
       "Description" : "Multi-AZ master database",
       "Type" : "String",
-      "Default" : "false",
+      "Default" : "true",
       "AllowedValues" : [ "true", "false" ],
       "ConstraintDescription" : "must be true or false."
     }
@@ -764,7 +764,7 @@
                   "MYBB_DBNAME": { "Ref": "DBName" },
                   "MYBB_DBUSERNAME": { "Ref": "DBUser" },
                   "MYBB_DBPASSWORD": { "Ref": "DBPassword" },
-                  "MYBB_DBHOSTNAME": "TESTE_DB_ENDPOINT",
+                  "MYBB_DBHOSTNAME": { "Fn::GetAtt": [ "MySQLDatabase", "Endpoint.Address" ] },
                   "MYBB_DBPORT": { "Ref": "DBPort" },                  
                   "MYBB_DOMAINNAME": { "Fn::GetAtt": [ "PublicElasticLoadBalancer", "DNSName" ] },
                   "MYBB_ADMINEMAIL": { "Ref": "AdministratorEmail" }
@@ -820,10 +820,65 @@
     }
   },
 
+    "DBSubnetGroup" : {
+      "Type" : "AWS::RDS::DBSubnetGroup",
+      "Properties" : {
+        "DBSubnetGroupDescription" : "Database subnet group.",
+        "SubnetIds" : [
+          { "Ref" : "PrivateSubnetA"},
+          { "Ref" : "PrivateSubnetB"}
+        ]
+      },
+      "DependsOn" : "VPC"
+    },
+
+    "DBEC2SecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties" : {
+        "GroupDescription": "Open Database for EC2 Access",
+        "SecurityGroupIngress" : [{
+          "IpProtocol" : "tcp",
+          "FromPort" : { "Ref": "DBPort" },
+          "ToPort" : { "Ref": "DBPort" },
+          "SourceSecurityGroupId" : { "Ref" : "WebServerSecurityGroup" }
+        }],
+        "VpcId" : { "Ref" : "VPC" }
+      },
+      "DependsOn" : [
+        "VPC",
+        "WebServerSecurityGroup"
+      ]
+    },
+
+    "MySQLDatabase": {
+      "Type": "AWS::RDS::DBInstance",
+      "Properties": {
+        "AllocatedStorage": { "Ref" : "DBAllocatedStorage" },
+        "DBInstanceClass": { "Ref" : "DBClass" },
+        "DBName" : { "Ref": "DBName" },
+        "DBSubnetGroupName" : { "Ref" : "DBSubnetGroup" },
+        "Engine" : "MySQL",
+        "MultiAZ" : { "Ref": "MultiAZ" },
+        "MasterUsername": { "Ref": "DBUser" },
+        "MasterUserPassword": { "Ref" : "DBPassword" },
+        "VPCSecurityGroups" : [ { "Fn::GetAtt": [ "DBEC2SecurityGroup", "GroupId" ] } ]
+      },
+      "DependsOn" : [
+        "PrivateSubnetA",
+        "PrivateSubnetB",
+        "DBSubnetGroup",
+        "DBEC2SecurityGroup"
+      ]
+    },
+
   "Outputs" : {
     "WebSite" : {
       "Description" : "URL of the website",
       "Value" :  { "Fn::Join" : [ "", [ "http://", { "Fn::GetAtt" : [ "PublicElasticLoadBalancer", "DNSName" ]}]]}
+    },
+    "Database" : {
+      "Description" : "URL of the database",
+      "Value" :  { "Fn::Join" : [ "", [ "http://", { "Fn::GetAtt": [ "MySQLDatabase", "Endpoint.Address" ]}]]}
     }
   }
 }
