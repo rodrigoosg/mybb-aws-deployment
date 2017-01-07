@@ -854,7 +854,7 @@
       "Type": "AWS::RDS::DBInstance",
       "Properties": {
         "AllocatedStorage": { "Ref" : "DBAllocatedStorage" },
-        "DBInstanceClass": { "Ref" : "DBClass" },
+        "DBInstanceClass": { "Ref" : "DBInstanceClass" },
         "DBName" : { "Ref": "DBName" },
         "DBSubnetGroupName" : { "Ref" : "DBSubnetGroup" },
         "Engine" : "MySQL",
