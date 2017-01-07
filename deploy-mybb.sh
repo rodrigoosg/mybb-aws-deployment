@@ -38,3 +38,6 @@ chmod 666 inc/config.php inc/settings.php
 chmod 666 inc/languages/english/*.php inc/languages/english/admin/*.php
 chmod 777 cache/ cache/themes/ uploads/ uploads/avatars/
 chmod 777 cache/ cache/themes/ uploads/ uploads/avatars/ admin/backups/
+
+# Remove install directory
+rm -rf /var/www/html/install
