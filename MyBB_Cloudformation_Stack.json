@@ -41,6 +41,71 @@
       "Description" : "Number of EC2 instances to launch for the WebServer server",
       "Type" : "Number",
       "Default" : "1"
+    },
+
+    "DBName": {
+      "Default": "MyBBDatabase",
+      "Description" : "The MyBB database name",
+      "Type": "String",
+      "MinLength": "1",
+      "MaxLength": "64",
+      "AllowedPattern" : "[a-zA-Z][a-zA-Z0-9]*",
+      "ConstraintDescription" : "must begin with a letter and contain only alphanumeric characters."
+    },
+
+    "DBUser": {
+      "NoEcho": "true",
+      "Description" : "The database admin account username",
+      "Type": "String",
+      "MinLength": "1",
+      "MaxLength": "16",
+      "AllowedPattern" : "[a-zA-Z][a-zA-Z0-9]*",
+      "ConstraintDescription" : "must begin with a letter and contain only alphanumeric characters."
+    },
+
+    "DBPassword": {
+      "NoEcho": "true",
+      "Description" : "The database admin account password",
+      "Type": "String",
+      "MinLength": "1",
+      "MaxLength": "41",
+      "AllowedPattern" : "[a-zA-Z0-9]+",
+      "ConstraintDescription" : "must contain only alphanumeric characters."
+    },
+
+    "DBAllocatedStorage": {
+      "Default": "5",
+      "Description" : "The size of the database (Gb)",
+      "Type": "Number",
+      "MinValue": "5",
+      "MaxValue": "1024",
+      "ConstraintDescription" : "must be between 5 and 1024Gb."
+    },
+
+    "DBInstanceClass": {
+      "Description" : "The database instance type",
+      "Type": "String",
+      "Default": "db.t2.small",
+      "AllowedValues" : [ "db.t1.micro", "db.m1.small", "db.m1.medium", "db.m1.large", "db.m1.xlarge", "db.m2.xlarge", "db.m2.2xlarge", "db.m2.4xlarge", "db.m3.medium", "db.m3.large", "db.m3.xlarge", "db.m3.2xlarge", "db.m4.large", "db.m4.xlarge", "db.m4.2xlarge", "db.m4.4xlarge", "db.m4.10xlarge", "db.r3.large", "db.r3.xlarge", "db.r3.2xlarge", "db.r3.4xlarge", "db.r3.8xlarge", "db.m2.xlarge", "db.m2.2xlarge", "db.m2.4xlarge", "db.cr1.8xlarge", "db.t2.micro", "db.t2.small", "db.t2.medium", "db.t2.large"]
+,
+      "ConstraintDescription" : "must select a valid database instance type."
+    },
+
+    "DBPort": {
+      "Type": "Number",
+      "Description": "The port number where MyBB will connect to the database.",
+      "MinValue": "1024",
+      "MaxValue": "65536",
+      "Default": 3306,
+      "ConstraintDescription": "Must be a valid (non-restricted) port number!"
+    },
+
+    "MultiAZ" : {
+      "Description" : "Multi-AZ master database",
+      "Type" : "String",
+      "Default" : "false",
+      "AllowedValues" : [ "true", "false" ],
+      "ConstraintDescription" : "must be true or false."
     }
   },
 
@@ -653,20 +718,18 @@
           "config" : {
             "packages" : {
               "yum" : {
-                "httpd" : []
+                "httpd"            : [],
+                "php"              : [],
+                "php-mysql"        : [],
+                "mysql"            : []
               }
             },
 
+            "sources" : {
+              "/tmp/mybb-aws-deployment" : "https://github.com/rodrigoosg/mybb-aws-deployment/tarball/master"
+            },
+
             "files" : {
-              "/var/www/html/index.html" : {
-                "content" : { "Fn::Join" : ["\n", [
-                  "<img src=\"", {"Fn::FindInMap" : ["Region2Examples", {"Ref" : "AWS::Region"}, "Examples"]}, "/cloudformation_graphic.png\" alt=\"AWS CloudFormation Logo\"/>",
-                  "<h1>Congratulations, you have successfully launched the AWS CloudFormation sample.</h1>"
-                ]]},
-                "mode"    : "000644",
-                "owner"   : "root",
-                "group"   : "root"
-              },
               "/etc/cfn/cfn-hup.conf" : {
                 "content" : { "Fn::Join" : ["", [
                   "[main]\n",
@@ -692,10 +755,25 @@
               }
             },
 
+            "commands": {
+              "install": {
+                "command": "/bin/bash ./deploy-mybb.sh",
+                "cwd": "/tmp/mybb-aws-deployment",
+                "env": {
+                  "MYBB_DBNAME": { "Ref": "DBName" },
+                  "MYBB_DBUSERNAME": { "Ref": "DBUser" },
+                  "MYBB_DBPASSWORD": { "Ref": "DBPassword" },
+                  "MYBB_DBHOSTNAME": "TESTE_DB_ENDPOINT",
+                  "MYBB_DBPORT": { "Ref": "DBPort" },                  
+                  "MYBB_DOMAINNAME": { "Fn::GetAtt": [ "PublicElasticLoadBalancer", "DNSName" ] },
+                  "MYBB_ADMINEMAIL": { "Ref": "AdministratorEmail" }
+                }
+              }
+            },
+
             "services" : {
               "sysvinit" : {
-                "httpd" : { "enabled" : "true", "ensureRunning" : "true", 
-                              "files" : [ "/etc/httpd/conf.d/aptobackend.conf", "/var/www/html/index.html" ]},
+                "httpd" : { "enabled" : "true", "ensureRunning" : "true"},
                 "cfn-hup" : { "enabled" : "true", "ensureRunning" : "true",
                               "files" : ["/etc/cfn/cfn-hup.conf", "/etc/cfn/hooks.d/cfn-auto-reloader.conf"]}
               }
@@ -703,6 +781,7 @@
           }
         }
       },
+
       "Properties" : {
         "ImageId"        : { "Fn::FindInMap" : [ "AWSRegionArch2AMI", { "Ref" : "AWS::Region" }, { "Fn::FindInMap" : [ "AWSInstanceType2Arch", { "Ref" : "WebServerInstanceType" }, "Arch" ] } ] },
         "SecurityGroups" : [ { "Ref" : "WebServerSecurityGroup" } ],
