@@ -8,7 +8,7 @@ DEPLOYMENT_DIR="/var/www/html"
 # Clean-up and copy files.
 rm -rf "$DEPLOYMENT_DIR"/*
 unzip "$MYBB_PACKAGE"
-cp -r ./Uploads/* "$DEPLOYMENT_DIR"/
+cp -r ./Upload/* "$DEPLOYMENT_DIR"/
 
 # Prepare and copy dynamic configuration files.
 sed -e "s/MYBB_ADMINEMAIL/${MYBB_ADMINEMAIL}/g" \
