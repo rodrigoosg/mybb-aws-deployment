@@ -576,7 +576,7 @@
           "Interval" : "30",
           "Timeout" : "15"
         }
-      },
+      }
     },
 
     "PublicLoadBalancerSecurityGroup" : {
@@ -817,8 +817,7 @@
           { "IpProtocol" : "tcp", "FromPort" : "80", "ToPort" : "80", "SourceSecurityGroupId" : { "Ref" : "PublicLoadBalancerSecurityGroup" } } ,
           { "IpProtocol" : "tcp", "FromPort" : "22", "ToPort" : "22", "CidrIp" : { "Ref" : "SSHLocation" } } ]
       }
-    }
-  },
+    },
 
     "DBSubnetGroup" : {
       "Type" : "AWS::RDS::DBSubnetGroup",
@@ -869,7 +868,8 @@
         "DBSubnetGroup",
         "DBEC2SecurityGroup"
       ]
-    },
+    }
+  },
 
   "Outputs" : {
     "WebSite" : {
