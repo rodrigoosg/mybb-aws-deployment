@@ -722,6 +722,7 @@
                 "httpd"            : [],
                 "php"              : [],
                 "php-mysql"        : [],
+                "php-gd"           : [],
                 "mysql"            : []
               }
             },
