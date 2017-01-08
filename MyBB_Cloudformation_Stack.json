@@ -670,6 +670,58 @@
       }
     },
 
+    "DiskReadIOPSAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmDescription": "Webservers Network Out",
+        "Namespace": "AWS/EC2",
+        "MetricName": "NetworkOut",
+        "Dimensions": [
+          {
+            "Name": "AutoScalingGroupName",
+            "Value": { "Ref": "MyBBWebServerAutoscalingGroup" }
+          }
+        ],
+        "Statistic": "Average",
+        "Period": "600",
+        "EvaluationPeriods": "1",
+        "Threshold": "1000000000",
+        "ComparisonOperator": "GreaterThanThreshold",
+        "AlarmActions": [{
+          "Ref": "NotificationTopic"
+        }],
+        "InsufficientDataActions": [{
+          "Ref": "NotificationTopic"
+        }]
+      }
+    },
+
+    "RDSDiskFreeStorageSpaceAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmDescription": "RDS Disk Free Storage Space",
+        "Namespace": "AWS/RDS",
+        "MetricName": "FreeStorageSpace",
+        "Dimensions": [
+          {
+            "Name": "DBInstanceIdentifier",
+            "Value": { "Ref": "MySQLDatabase" }
+          }
+        ],
+        "Statistic": "Average",
+        "Period": "300",
+        "EvaluationPeriods": "1",
+        "Threshold": "500000000",
+        "ComparisonOperator": "LessThanThreshold",
+        "AlarmActions": [{
+          "Ref": "NotificationTopic"
+        }],
+        "InsufficientDataActions": [{
+          "Ref": "NotificationTopic"
+        }]
+      }
+    },
+
     "CPUAlarmHigh": {
      "Type": "AWS::CloudWatch::Alarm",
      "Properties": {
