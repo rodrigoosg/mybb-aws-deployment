@@ -811,7 +811,7 @@
 
             "commands": {
               "install": {
-                "command": "/bin/bash ./deploy-mybb.sh",
+                "command": "/bin/bash ./Code/deploy-mybb.sh",
                 "cwd": "/tmp/mybb-aws-deployment",
                 "env": {
                   "MYBB_DBNAME": { "Ref": "DBName" },
