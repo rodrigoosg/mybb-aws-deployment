@@ -6,7 +6,7 @@
 
 # Configuration variables
 CONFIG="./Code"
-MYBB_PACKAGE="./Code/mybb_1809_with_theme.zip"
+MYBB_PACKAGE="./Code/mybb_1809.zip"
 DEPLOYMENT_DIR="/var/www/html"
 
 # Assert that apache deployment dir is clean
