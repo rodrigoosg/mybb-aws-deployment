@@ -19,16 +19,16 @@ unzip "$MYBB_PACKAGE"
 cp -r ./Upload/* "$DEPLOYMENT_DIR"/
 
 # Replace variables in prepared configuration files
-sed -e "s/MYBB_ADMINEMAIL/${MYBB_ADMINEMAIL}/g" -e "s/MYBB_DOMAINNAME/${MYBB_DOMAINNAME}/g" "${CONFIG}/settings.php" > "${DEPLOYMENT_DIR}/inc/settings.php"
+sed -e "s/MYBB_ADMINEMAIL/${CNF_PARAM_ADMINEMAIL}/g" -e "s/MYBB_DOMAINNAME/${CNF_PARAM_DOMAINNAME}/g" "${CONFIG}/settings.php" > "${DEPLOYMENT_DIR}/inc/settings.php"
 
-sed -e "s/MYBB_DBNAME/${MYBB_DBNAME}/g" -e "s/MYBB_DBUSERNAME/${MYBB_DBUSERNAME}/g" -e "s/MYBB_DBPASSWORD/${MYBB_DBPASSWORD}/g" \
-    -e "s/MYBB_DBHOSTNAME/${MYBB_DBHOSTNAME}/g" -e "s/MYBB_DBPORT/${MYBB_DBPORT}/g" "${CONFIG}/config.php" > "${DEPLOYMENT_DIR}/inc/config.php"
+sed -e "s/MYBB_DBNAME/${CNF_PARAM_DBNAME}/g" -e "s/MYBB_DBUSERNAME/${CNF_PARAM_DBUSERNAME}/g" -e "s/MYBB_DBPASSWORD/${CNF_PARAM_DBPASSWORD}/g" \
+    -e "s/MYBB_DBHOSTNAME/${CNF_PARAM_DBHOSTNAME}/g" -e "s/MYBB_DBPORT/${CNF_PARAM_DBPORT}/g" "${CONFIG}/config.php" > "${DEPLOYMENT_DIR}/inc/config.php"
 
 # Configure database with ADMIN and DOMAIN variables
-sed -e "s/MYBB_ADMINEMAIL/${MYBB_ADMINEMAIL}/g" -e "s/MYBB_DOMAINNAME/${MYBB_DOMAINNAME}/g" "${CONFIG}/mybb.sql" 
+sed -e "s/MYBB_ADMINEMAIL/${CNF_PARAM_ADMINEMAIL}/g" -e "s/MYBB_DOMAINNAME/${CNF_PARAM_DOMAINNAME}/g" "${CONFIG}/mybb.sql" 
 
 # Load configured DUMP file into RDS database
-mysql --user="$MYBB_DBUSERNAME" --password="$MYBB_DBPASSWORD" --host="$MYBB_DBHOSTNAME" --port="$MYBB_DBPORT" --database="$MYBB_DBNAME" < "${CONFIG}/mybb.sql" || echo "Schema Already Exists!"
+mysql --user="$CNF_PARAM_DBUSERNAME" --password="$CNF_PARAM_DBPASSWORD" --host="$CNF_PARAM_DBHOSTNAME" --port="$CNF_PARAM_DBPORT" --database="$CNF_PARAM_DBNAME" < "${CONFIG}/mybb.sql" || echo "Schema Already Exists!"
 
 # Set proper ownership and permissions.
 cd "$DEPLOYMENT_DIR"

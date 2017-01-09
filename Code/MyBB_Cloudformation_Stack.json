@@ -1,7 +1,7 @@
 {
   "AWSTemplateFormatVersion" : "2010-09-09",
 
-  "Description" : "AWS CloudFormation Sample Template VPC_AutoScaling_With_Public_IPs.template: Sample template showing how to create a load balanced, auto scaled group in a VPC where the EC2 instances can directly access the internet. **WARNING** This template creates Elastic Load Balancers and Amazon EC2 instances. You will be billed for the AWS resources used if you create a stack from this template.",
+  "Description" : "AWS CloudFormation Template for deploying MYBB application in AWS with high available, secure and scalable infraestructure.",
 
   "Parameters" : {
 
@@ -814,13 +814,13 @@
                 "command": "/bin/bash ./Code/deploy-mybb.sh",
                 "cwd": "/tmp/mybb-aws-deployment",
                 "env": {
-                  "MYBB_DBNAME": { "Ref": "DBName" },
-                  "MYBB_DBUSERNAME": { "Ref": "DBUser" },
-                  "MYBB_DBPASSWORD": { "Ref": "DBPassword" },
-                  "MYBB_DBHOSTNAME": { "Fn::GetAtt": [ "MySQLDatabase", "Endpoint.Address" ] },
-                  "MYBB_DBPORT": { "Ref": "DBPort" },                  
-                  "MYBB_DOMAINNAME": { "Fn::GetAtt": [ "PublicElasticLoadBalancer", "DNSName" ] },
-                  "MYBB_ADMINEMAIL": { "Ref": "AdministratorEmail" }
+                  "CNF_PARAM_DBNAME": { "Ref": "DBName" },
+                  "CNF_PARAM_DBUSERNAME": { "Ref": "DBUser" },
+                  "CNF_PARAM_DBPASSWORD": { "Ref": "DBPassword" },
+                  "CNF_PARAM_DBHOSTNAME": { "Fn::GetAtt": [ "MySQLDatabase", "Endpoint.Address" ] },
+                  "CNF_PARAM_DBPORT": { "Ref": "DBPort" },                  
+                  "CNF_PARAM_DOMAINNAME": { "Fn::GetAtt": [ "PublicElasticLoadBalancer", "DNSName" ] },
+                  "CNF_PARAM_ADMINEMAIL": { "Ref": "AdministratorEmail" }
                 }
               }
             },
